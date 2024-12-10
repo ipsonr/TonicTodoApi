@@ -1,0 +1,59 @@
+@TonicTodoApi_HostAddress = https://localhost:44330
+
+GET {{TonicTodoApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+GET {{TonicTodoApi_HostAddress}}/api/todo
+
+###
+
+
+POST {{TonicTodoApi_HostAddress}}/api/todo
+Content-Type: application/json
+
+{
+  "Name": "wash clothes",
+  "IsComplete": false,
+  "Secret": "yup"
+}
+
+###
+
+@id=2
+PUT {{TonicTodoApi_HostAddress}}/api/todo/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "Name": "practice the cello",
+  "IsComplete": true,
+  "Secret": "nope"
+}
+
+###
+
+DELETE {{TonicTodoApi_HostAddress}}/api/todo/1
+
+###
+POST {{TonicTodoApi_HostAddress}}/api/todo
+Content-Type: application/json
+
+{
+  "Name": "water the plants",
+  "IsComplete": false,
+  "Secret": "code red"
+}
+
+###
+POST {{TonicTodoApi_HostAddress}}/api/todo
+Content-Type: application/json
+
+{
+  "Name": "feed the cat",
+  "IsComplete": true,
+  "Secret": "code blue"
+}
+
+###

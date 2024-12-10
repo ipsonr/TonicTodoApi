@@ -1,11 +1,13 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using TonicTodoApi.Data;
 using TonicTodoApi.Repositories;
+using TonicTodoApi.Services.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<ITodoRepository, TodoRepository>();
-
+builder.Services.AddValidatorsFromAssemblyContaining<TodoValidator>();
 
 //var connectionString =
 //    builder.Configuration.GetConnectionString("TodoConnectionString")

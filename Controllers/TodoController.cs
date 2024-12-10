@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentValidation;
+using FluentValidation.Results;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using TonicTodoApi.Data;
 using TonicTodoApi.Models;
 using TonicTodoApi.Repositories;
 
@@ -10,16 +11,15 @@ namespace TonicTodoApi.Controllers
     [ApiController]
     public class TodoController : ControllerBase
     {
-        private readonly ILogger _logger;
+        private readonly ILogger _logger;//TODO: Add logging, authentication, exception handling
         private readonly ITodoRepository _todoRepository;
-        private readonly TodoDbContext _context;
+        private IValidator<Todo> _validator;
 
-        //public TodoController(ILogger<TodoController> logger, ITodoRepository todoRepository)
-        public TodoController(ILogger<TodoController> logger, TodoDbContext context, ITodoRepository todoRepository)
+        public TodoController(ILogger<TodoController> logger, ITodoRepository todoRepository, IValidator<Todo> validator)
         {
             _logger = logger;
             _todoRepository = todoRepository;
-            _context = context;
+            _validator = validator;
         }
 
         // GET: api/Todo
@@ -27,7 +27,6 @@ namespace TonicTodoApi.Controllers
         public async Task<ActionResult<IEnumerable<Todo>>> GetAllTodosAsync()
         {
             var todos = await _todoRepository.GetAllTodosAsync();
-            //var todos = await _context.Todos.ToListAsync();
 
             if (todos.IsNullOrEmpty())
                 return NotFound();
@@ -40,7 +39,6 @@ namespace TonicTodoApi.Controllers
         public async Task<ActionResult<Todo>> GetTodoByIdAsync(int id)
         {
             var todo = await _todoRepository.GetTodoByIdAsync(id);
-            //var todo = await _context.Todos.FirstOrDefaultAsync(todo => todo.Id == id);
 
             if (todo is null)
                 return NotFound();
@@ -49,10 +47,16 @@ namespace TonicTodoApi.Controllers
         }
 
         // PUT: api/Todo/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTodo(Todo todoNew)
         {
+            ValidationResult result = await _validator.ValidateAsync(todoNew);
+
+            if (!result.IsValid)
+            {
+                return BadRequest(result.Errors);
+            }
+
             if (todoNew is null)
             {
                 return BadRequest("Todo cannot be null.");
@@ -69,38 +73,23 @@ namespace TonicTodoApi.Controllers
 
             await _todoRepository.UpdateAsync(todo);
 
-            //_context.Entry(todo).State = EntityState.Modified;
-
-            //try
-            //{
-            //    await _context.SaveChangesAsync();
-            //}
-            //catch (DbUpdateConcurrencyException)
-            //{
-            //    if (!TodoExists(id))
-            //    {
-            //        return NotFound();
-            //    }
-            //    else
-            //    {
-            //        throw;
-            //    }
-            //}
-
             return NoContent();
         }
 
         // POST: api/Todo
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Todo>> CreateTodo(Todo todo)
         {
+            ValidationResult result = await _validator.ValidateAsync(todo);
+
+            if (!result.IsValid)
+            {
+                return BadRequest(result.Errors);
+            }
+
             await _todoRepository.CreateAsync(todo);
-            //_context.Todos.Add(todo);
-            //await _context.SaveChangesAsync();
 
             return CreatedAtRoute("GetTodoByIdAsync", new { id = todo.Id }, todo);
-            //return CreatedAtAction("GetTodoByIdAsync", new { id = todo.Id }, todo);
         }
 
         // DELETE: api/Todo/5
@@ -112,23 +101,9 @@ namespace TonicTodoApi.Controllers
             if (todo is null)
                 return NotFound();
 
-            //var todo = await _context.Todos.FindAsync(id);
-            //if (todo == null)
-            //{
-            //    return NotFound();
-            //}
-
-            //_context.Todos.Remove(todo);
-            //await _context.SaveChangesAsync();
-
             await _todoRepository.DeleteAsync(id);
 
             return NoContent();
         }
-
-        //private bool TodoExists(int id)
-        //{
-        //    return _context.Todos.Any(e => e.Id == id);
-        //}
     }
 }

@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35527.113 d17.12
+VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TonicTodoApi", "TonicTodoApi.csproj", "{7E80BE09-59CB-4EFA-9E90-11413AF22547}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TonicTodoApiTests", "..\TonicTodoApiTests\TonicTodoApiTests.csproj", "{D5C5337B-1DA0-42D3-B516-B7F46E5F67FB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{7E80BE09-59CB-4EFA-9E90-11413AF22547}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E80BE09-59CB-4EFA-9E90-11413AF22547}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E80BE09-59CB-4EFA-9E90-11413AF22547}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5C5337B-1DA0-42D3-B516-B7F46E5F67FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5C5337B-1DA0-42D3-B516-B7F46E5F67FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5C5337B-1DA0-42D3-B516-B7F46E5F67FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5C5337B-1DA0-42D3-B516-B7F46E5F67FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

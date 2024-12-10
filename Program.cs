@@ -1,9 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using TonicTodoApi.Data;
+using TonicTodoApi.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddScoped<ITodoRepository, TodoRepository>();
+
 
 //var connectionString =
 //    builder.Configuration.GetConnectionString("TodoConnectionString")
@@ -28,7 +30,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 var app = builder.Build();

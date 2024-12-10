@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Repositories\TodoRepository.cs" />
     <Compile Remove="Services\TodoService.cs" />
   </ItemGroup>
 

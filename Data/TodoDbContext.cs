@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-using TonicTodoApi.Models;
+﻿using TonicTodoApi.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace TonicTodoApi.Data
 {
     public class TodoDbContext(DbContextOptions<TodoDbContext> options) : DbContext(options)
-    //public class TodoDbContext : DbContext
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

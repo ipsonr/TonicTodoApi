@@ -5,9 +5,9 @@ namespace TonicTodoApi.Repositories
 {
     public interface ITodoRepository
     {
-        Task<ActionResult> GetTodoByIdAsync(int id);
-        Task<ActionResult> GetAllTodosAsync();
-        Task<ActionResult> GetCompletedTodosAsync();
+        Task<Todo> GetTodoByIdAsync(int id);
+        Task<IEnumerable<Todo>> GetAllTodosAsync();
+        Task<List<Todo>> GetCompletedTodosAsync();
         Task<ActionResult> DeleteAsync(int id);
         Task<ActionResult> CreateAsync(Todo todo);
         Task<ActionResult> UpdateAsync(Todo todo);

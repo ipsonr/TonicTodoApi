@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using TonicTodoApi.Data;
 using TonicTodoApi.Models;
+using TonicTodoApi.Repositories;
 
 namespace TonicTodoApi.Controllers
 {
@@ -11,14 +11,14 @@ namespace TonicTodoApi.Controllers
     public class TodoController : ControllerBase
     {
         private readonly ILogger _logger;
-        //private readonly ITodoRepository _todoRepository;
+        private readonly ITodoRepository _todoRepository;
         private readonly TodoDbContext _context;
 
         //public TodoController(ILogger<TodoController> logger, ITodoRepository todoRepository)
-        public TodoController(ILogger<TodoController> logger, TodoDbContext context)
+        public TodoController(ILogger<TodoController> logger, TodoDbContext context, ITodoRepository todoRepository)
         {
             _logger = logger;
-            //_todoRepository = todoRepository;
+            _todoRepository = todoRepository;
             _context = context;
         }
 
@@ -26,8 +26,8 @@ namespace TonicTodoApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Todo>>> GetAllTodosAsync()
         {
-            //var todos = await _todoRepository.GetAllTodosAsync();
-            var todos = await _context.Todos.ToListAsync();
+            var todos = await _todoRepository.GetAllTodosAsync();
+            //var todos = await _context.Todos.ToListAsync();
 
             if (todos.IsNullOrEmpty())
                 return NotFound();
@@ -39,7 +39,8 @@ namespace TonicTodoApi.Controllers
         [HttpGet("{id}", Name="GetTodoByIdAsync")]
         public async Task<ActionResult<Todo>> GetTodoByIdAsync(int id)
         {
-            var todo = await _context.Todos.FirstOrDefaultAsync(todo => todo.Id == id);
+            var todo = await _todoRepository.GetTodoByIdAsync(id);
+            //var todo = await _context.Todos.FirstOrDefaultAsync(todo => todo.Id == id);
 
             if (todo is null)
                 return NotFound();
@@ -50,30 +51,41 @@ namespace TonicTodoApi.Controllers
         // PUT: api/Todo/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateTodo(int id, Todo todo)
+        public async Task<IActionResult> UpdateTodo(Todo todoNew)
         {
-            if (id != todo.Id)
+            if (todoNew is null)
             {
-                return BadRequest();
+                return BadRequest("Todo cannot be null.");
             }
 
-            _context.Entry(todo).State = EntityState.Modified;
+            var todo = await _todoRepository.GetTodoByIdAsync(todoNew.Id);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TodoExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            if (todo is null)
+                return NotFound();
+
+            todo.Name = todoNew.Name;
+            todo.IsComplete = todoNew.IsComplete;
+            todo.Secret = todoNew.Secret;
+
+            await _todoRepository.UpdateAsync(todo);
+
+            //_context.Entry(todo).State = EntityState.Modified;
+
+            //try
+            //{
+            //    await _context.SaveChangesAsync();
+            //}
+            //catch (DbUpdateConcurrencyException)
+            //{
+            //    if (!TodoExists(id))
+            //    {
+            //        return NotFound();
+            //    }
+            //    else
+            //    {
+            //        throw;
+            //    }
+            //}
 
             return NoContent();
         }
@@ -83,8 +95,9 @@ namespace TonicTodoApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Todo>> CreateTodo(Todo todo)
         {
-            _context.Todos.Add(todo);
-            await _context.SaveChangesAsync();
+            await _todoRepository.CreateAsync(todo);
+            //_context.Todos.Add(todo);
+            //await _context.SaveChangesAsync();
 
             return CreatedAtRoute("GetTodoByIdAsync", new { id = todo.Id }, todo);
             //return CreatedAtAction("GetTodoByIdAsync", new { id = todo.Id }, todo);
@@ -94,21 +107,28 @@ namespace TonicTodoApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTodo(int id)
         {
-            var todo = await _context.Todos.FindAsync(id);
-            if (todo == null)
-            {
-                return NotFound();
-            }
+            var todo = await _todoRepository.GetTodoByIdAsync(id);
 
-            _context.Todos.Remove(todo);
-            await _context.SaveChangesAsync();
+            if (todo is null)
+                return NotFound();
+
+            //var todo = await _context.Todos.FindAsync(id);
+            //if (todo == null)
+            //{
+            //    return NotFound();
+            //}
+
+            //_context.Todos.Remove(todo);
+            //await _context.SaveChangesAsync();
+
+            await _todoRepository.DeleteAsync(id);
 
             return NoContent();
         }
 
-        private bool TodoExists(int id)
-        {
-            return _context.Todos.Any(e => e.Id == id);
-        }
+        //private bool TodoExists(int id)
+        //{
+        //    return _context.Todos.Any(e => e.Id == id);
+        //}
     }
 }
